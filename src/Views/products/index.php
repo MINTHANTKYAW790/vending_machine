@@ -12,20 +12,26 @@
     $sortLink = static function (string $column) use ($page, $toggleDir): string {
         return '/products?page=' . $page . '&sort=' . urlencode($column) . '&dir=' . $toggleDir;
     };
+    $sortIcon = static function (string $column) use ($sort, $dir): string {
+        if ($sort !== $column) {
+            return '';
+        }
+        return strtolower($dir) === 'asc' ? ' ▲' : ' ▼';
+    };
 ?>
 
 <table>
     <thead>
     <tr>
-        <th><a href="<?= e($sortLink('id')) ?>">ID</a></th>
-        <th><a href="<?= e($sortLink('name')) ?>">Name</a></th>
-        <th><a href="<?= e($sortLink('price')) ?>">Price</a></th>
-        <th><a href="<?= e($sortLink('quantity_available')) ?>">Quantity</a></th>
+        <th><a href="<?= e($sortLink('id')) ?>">ID<?= e($sortIcon('id')) ?></a></th>
+        <th><a href="<?= e($sortLink('name')) ?>">Name<?= e($sortIcon('name')) ?></a></th>
+        <th><a href="<?= e($sortLink('price')) ?>">Price<?= e($sortIcon('price')) ?></a></th>
+        <th><a href="<?= e($sortLink('quantity_available')) ?>">Quantity<?= e($sortIcon('quantity_available')) ?></a></th>
         <th>Actions</th>
     </tr>
     </thead>
     <tbody>
-    <?php foreach ($products as $product): ?>
+    <?php foreach ($products as $product): ?>   
         <tr>
             <td><?= (int) $product['id'] ?></td>
             <td><?= e($product['name']) ?></td>
@@ -33,7 +39,9 @@
             <td><?= (int) $product['quantity_available'] ?></td>
             <td class="actions">
                 <a class="btn" href="/products/<?= (int) $product['id'] ?>-<?= urlencode(strtolower($product['name'])) ?>">View</a>
-                <a class="btn btn-primary" href="/products/<?= (int) $product['id'] ?>/purchase">Purchase</a>
+                <?php if (!$isAdmin): ?>
+                    <a class="btn btn-primary" href="/products/<?= (int) $product['id'] ?>/purchase">Purchase</a>
+                <?php endif; ?>
                 <?php if ($isAdmin): ?>
                     <a class="btn" href="/products/<?= (int) $product['id'] ?>/edit">Edit</a>
                     <form method="POST" action="/products/<?= (int) $product['id'] ?>/delete" onsubmit="return confirm('Delete this product?');">

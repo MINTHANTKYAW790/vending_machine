@@ -7,11 +7,14 @@ namespace App\Core;
 use App\Controllers\Api\AuthApiController;
 use App\Controllers\Api\ProductsApiController;
 use App\Controllers\Api\TransactionsApiController;
+use App\Controllers\Api\UsersApiController;
 use App\Controllers\AuthController;
 use App\Controllers\ProductsController;
 use App\Controllers\TransactionsController;
+use App\Controllers\UsersController;
 use App\Repositories\ProductRepository;
 use App\Repositories\ProductRepositoryInterface;
+use App\Repositories\UserRepository;
 use App\Services\Database;
 use Throwable;
 
@@ -33,6 +36,7 @@ final class Application
 
         Container::set(Database::class, new Database($this->databaseConfig));
         Container::bind(ProductRepositoryInterface::class, ProductRepository::class);
+        Container::bind(UserRepository::class, UserRepository::class);
         $router = new Router();
         $router->register($this->routes);
         $router->registerAttributeRoutes([
@@ -42,6 +46,8 @@ final class Application
             AuthApiController::class,
             ProductsApiController::class,
             TransactionsApiController::class,
+            UsersController::class,
+            UsersApiController::class,
         ]);
 
         try {

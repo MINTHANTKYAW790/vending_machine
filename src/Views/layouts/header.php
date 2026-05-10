@@ -30,6 +30,9 @@
         <a href="/products">Products</a>
         <?php if (auth_user_id()): ?>
             <a href="/transactions">Transactions</a>
+            <?php if (is_admin()): ?>
+                <a href="/users">Users</a>
+            <?php endif; ?>
         <?php endif; ?>
     </div>
     <div>

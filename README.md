@@ -69,11 +69,20 @@ Production-style PHP + MySQL vending machine system with:
 ## Deployment (Preview Link)
 Recommended easiest path:
 1. Provision a small VPS/shared host with Apache + PHP 8.1 + MySQL.
-2. Upload project and run `composer install --no-dev` in server shell.
-3. Create `.env` with production DB + JWT secret.
-4. Run migrations/seeds once.
+2. Upload project (exclude `vendor/` if uploading manually, or upload all and run `composer install --no-dev --optimize-autoloader` on server).
+3. Copy `.env.example` to `.env` and update with production values:
+   - `APP_ENV=production`
+   - `APP_DEBUG=false`
+   - `APP_URL=https://yourdomain.com`
+   - DB credentials for production DB
+   - Strong `JWT_SECRET` (generate random string)
+4. Create database and run migrations/seeds once:
+   - `php scripts/migrate.php`
+   - `php scripts/seed.php`
 5. Point vhost document root to `public/`.
 6. Enable rewrite module (`mod_rewrite`) and allow `.htaccess`.
-7. Test login, product CRUD, and purchase flow.
-
+7. Ensure file permissions: `public/` writable for sessions if needed.
+8. Test login, product CRUD, and purchase flow.
+### InfinityFree deployment
+If you deploy to InfinityFree, upload the project into `htdocs` and use the root `index.php` + `.htaccess` files provided in this repository. This routes requests into `public/index.php` without moving the entire app out of the `public/` folder.
 After deployment, use your server domain/IP as the preview link for submission.

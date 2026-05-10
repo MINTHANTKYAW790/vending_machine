@@ -32,10 +32,10 @@ final class ProductsApiController extends Controller
         return $payload;
     }
 
-    private function requireAdmin(array $payload): bool
+    private function requireUser(array $payload): bool
     {
-        if (($payload['role'] ?? null) !== 'Admin') {
-            $this->json(['message' => 'Forbidden'], 403);
+        if (($payload['role'] ?? null) !== 'User') {
+            $this->json(['message' => 'Only users can purchase products'], 403);
             return false;
         }
         return true;
@@ -43,9 +43,6 @@ final class ProductsApiController extends Controller
 
     public function index(Request $request): void
     {
-        if (!$this->auth($request)) {
-            return;
-        }
         $page = max(1, (int) $request->query('page', 1));
         $products = $this->products->paginate($page, 20, (string) $request->query('sort', 'id'), (string) $request->query('dir', 'asc'));
         $this->json(['data' => $products, 'page' => $page]);
@@ -53,9 +50,7 @@ final class ProductsApiController extends Controller
 
     public function show(Request $request, string $id): void
     {
-        if (!$this->auth($request)) {
-            return;
-        }
+
         $product = $this->products->findById((int) $id);
         if (!$product) {
             $this->json(['message' => 'Not found'], 404);
@@ -120,7 +115,7 @@ final class ProductsApiController extends Controller
     public function purchase(Request $request, string $id): void
     {
         $payload = $this->auth($request);
-        if (!$payload) {
+        if (!$payload || !$this->requireUser($payload)) {
             return;
         }
         $quantity = (int) $request->input('quantity', 1);

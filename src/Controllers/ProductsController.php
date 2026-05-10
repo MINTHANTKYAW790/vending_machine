@@ -161,7 +161,7 @@ final class ProductsController extends Controller
     #[Route('POST', '/products/{id}/purchase', name: 'products.purchase')]
     public function purchase(Request $request, string $id): void
     {
-        RoleMiddleware::ensureAnyRole(['Admin', 'User']);
+        RoleMiddleware::ensureRole('User');
         $quantity = (int) $request->input('quantity', 1);
         $productId = (int) $id;
         try {
